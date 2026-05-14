@@ -22,3 +22,8 @@ Nota: *Debe de encontrarse en la carpeta actual de requeriments.txt, de caso con
 8. **(Opcional) Cargar datos de prueba:** Para poblar la base de datos con usuarios y solicitudes de ejemplo, ejecute: `python manage.py populate_data`
    - Usuarios creados: `presi`, `vol1`, `vol2`, `abuelo1`.
    - Contraseña para todos: `pass1234`.
+9. Desplegar dos terminales nuevas dentro de el entorno virtual, una sera para establecer la conexion a la base de datos y otra para visualizar la pagina.
+10. Comando nuevos necesarios (por orden de apertura):
+    1. Para establecer la conexion a la base de datos: cd c:\Users\bsd28\Documents\GitHub\Desarrollo-de-software\server node src/server.js
+    2. Para visualizar la pagina: cd c:\Users\bsd28\Documents\GitHub\Desarrollo-de-software\client npm run dev
+11. Para terminar, el localhost que te brinde el comando para visualizar la pagina se tiene que abrir. Por ejemplo: http://localhost:5173
