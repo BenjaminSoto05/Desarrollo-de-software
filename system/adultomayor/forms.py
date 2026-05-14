@@ -6,6 +6,12 @@ from .models import Profile, Solicitud
 class UserRegisterForm(UserCreationForm):
     rut = forms.CharField(max_length=12, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'RUT'}))
     rol = forms.ChoiceField(choices=Profile.ROLES, widget=forms.Select(attrs={'class': 'form-select'}))
+    consentimiento_privacidad = forms.BooleanField(
+        required=True,
+        label="Acepto el tratamiento de mis datos personales según la Ley 19.628.",
+        help_text="Tus datos sensibles (RUT, Dirección) solo serán accesibles bajo estricta necesidad por voluntarios asignados.",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
 
     class Meta:
         model = User
