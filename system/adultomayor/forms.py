@@ -46,3 +46,15 @@ class SolicitudForm(forms.ModelForm):
             'cantidad_voluntarios': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
             'cantidad_beneficiarios': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
+
+class SolicitudPaso2Form(forms.Form):
+    descripcion = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'w-full p-4 text-xl border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-amber-400 focus:border-blue-600',
+            'rows': 5,
+            'placeholder': 'Ejemplo: Necesito ayuda para ir al supermercado el martes en la mañana...',
+            'aria-label': 'Descripción detallada de la ayuda que necesita'
+        }),
+        label="Cuéntanos más sobre lo que necesitas",
+        required=True
+    )
