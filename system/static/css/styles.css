@@ -5,18 +5,18 @@
     --btn-hover: #23272b;
 }
 
-/* Role: Adulto Mayor (Yellow) */
+/* Role: Adulto Mayor (Blue) */
 body.role-adulto_mayor {
-    --main-color: #fdc300;
-    --text-color: black;
-    --btn-hover: #e0ac00;
-}
-
-/* Role: Voluntario (Blue) */
-body.role-voluntario {
     --main-color: #0077ba;
     --text-color: white;
     --btn-hover: #005fa3;
+}
+
+/* Role: Voluntario (Yellow) */
+body.role-voluntario {
+    --main-color: #fdc300;
+    --text-color: black;
+    --btn-hover: #e0ac00;
 }
 
 body {
