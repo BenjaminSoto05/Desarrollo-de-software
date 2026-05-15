@@ -7,6 +7,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./infrastructure/swagger');
+const { logger } = require('./infrastructure/logger');
 
 const app = express();
 
@@ -42,6 +45,21 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'UCT-Vínculo Mayor API',
   });
+});
+
+// ============================================================================
+// Swagger/OpenAPI — RNF-MAN-02
+// Equivalente a /api/docs/swagger/ de Django (drf-spectacular)
+// ============================================================================
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'AllyUCT API - Documentación',
+}));
+
+// Schema JSON endpoint (equivalente a /api/schema/ de Django)
+app.get('/api/schema', (req, res) => {
+  res.json(swaggerSpec);
 });
 
 // ============================================================================

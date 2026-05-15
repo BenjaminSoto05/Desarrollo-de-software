@@ -1,27 +1,58 @@
-# Usa una imagen ligera de Python optimizada
-FROM python:3.12-slim-bookworm
+# ============================================================================
+# Dockerfile Multi-Stage — UCT-Vínculo Mayor
+# Equivalente al Dockerfile Python de los compañeros, adaptado a Node.js
+# Stage 1: Build del frontend React
+# Stage 2: Servidor Node.js + archivos estáticos
+# ============================================================================
 
-# Evita que Python escriba archivos .pyc y fuerza salida de logs al stdout
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# --- Stage 1: Build del frontend React ---
+FROM node:22-alpine AS frontend-build
 
-# Instalar dependencias del sistema necesarias para PostgreSQL y compilación
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/client
 
-# Establecer directorio de trabajo
+# Copiar dependencias del frontend y instalar
+COPY client/package*.json ./
+RUN npm ci
+
+# Copiar código fuente y compilar
+COPY client/ ./
+RUN npm run build
+
+# --- Stage 2: Servidor Node.js ---
+FROM node:22-alpine
+
+# Evita que Node escriba archivos innecesarios
+ENV NODE_ENV=production
+
+# Instalar dependencias del sistema para Prisma
+RUN apk add --no-cache openssl
+
+# Directorio de trabajo
 WORKDIR /app
 
-# Copiar requirements y reinstalar dependencias
-COPY requirements.txt /app/
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copiar dependencias del backend y instalar (solo producción)
+COPY server/package*.json ./
+RUN npm ci --omit=dev
 
-# Copiar el código del proyecto (la carpeta system) a /app
-COPY system/ /app/
+# Copiar Prisma schema y generar cliente
+COPY server/prisma ./prisma
+RUN npx prisma generate
 
-# Exponer el puerto de Gunicorn
-EXPOSE 8000
+# Copiar código fuente del backend
+COPY server/src ./src
 
-# Comando para ejecutar Gunicorn usando nuestro archivo de configuración
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "config.wsgi:application"]
+# Copiar frontend compilado para servir estáticamente
+COPY --from=frontend-build /app/client/dist ./public
+
+# Crear directorio de logs
+RUN mkdir -p /app/logs
+
+# Exponer el puerto del servidor Node.js
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://localhost:3000/api/health || exit 1
+
+# Comando de inicio
+CMD ["node", "src/server.js"]
