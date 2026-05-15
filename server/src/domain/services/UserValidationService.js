@@ -139,6 +139,21 @@ class UserValidationService {
     const dv = limpio.slice(-1);
     return `${cuerpo}-${dv}`.toUpperCase();
   }
+
+  /**
+   * Asigna rol automáticamente basado en dominio de email.
+   * Equivalente a: CustomUserManager._validate_email_domain() en Django
+   * @uct.cl / @alu.uct.cl → ESTUDIANTE
+   * Otros dominios → ADULTO_MAYOR
+   * @param {string} email
+   * @returns {string} Rol asignado
+   */
+  static assignRoleByEmailDomain(email) {
+    if (!email) return 'ADULTO_MAYOR';
+    const emailNorm = email.toLowerCase().trim();
+    const esDominioUCT = DOMINIOS_UCT.some((d) => emailNorm.endsWith(d));
+    return esDominioUCT ? 'ESTUDIANTE' : 'ADULTO_MAYOR';
+  }
 }
 
 module.exports = { UserValidationService, COMUNAS_PERMITIDAS };

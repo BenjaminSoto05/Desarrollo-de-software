@@ -89,6 +89,19 @@ const securityLogger = {
       { module: 'security.inasistencia' }
     );
   },
+
+  // ============================================================
+  // Auditoría de datos sensibles — Equivalente a core/audit/log_sensitive_access()
+  // Cumple con Ley 19.628 y privacidad por diseño.
+  // ============================================================
+  logSensitiveAccess(user, entityName, entityId, field, action) {
+    logger.info(
+      `Auditoría: Usuario ${user.email} (${user.rol}) accedió a campo '${field}' ` +
+      `en ${entityName} ID ${entityId} mediante acción '${action}' ` +
+      `el ${new Date().toISOString()}`,
+      { module: 'core.audit' }
+    );
+  },
 };
 
 module.exports = { logger, securityLogger };
