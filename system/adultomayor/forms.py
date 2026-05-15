@@ -29,6 +29,18 @@ class UserRegisterForm(UserCreationForm):
             raise forms.ValidationError("Este nombre de usuario ya está en uso.")
         return username
 
+    def clean(self):
+        cleaned_data = super().clean()
+        rol = cleaned_data.get('rol')
+        email = cleaned_data.get('email')
+
+        if rol == 'VOLUNTARIO' and email and not email.endswith('@alu.uct.cl'):
+            raise forms.ValidationError(
+                "Para registrarse como voluntario, debe usar un correo con el dominio '@alu.uct.cl'."
+            )
+
+        return cleaned_data
+
     def save(self, commit=True):
         user = super().save(commit=False)
         if commit:
