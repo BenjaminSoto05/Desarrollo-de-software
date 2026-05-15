@@ -50,7 +50,7 @@ const registerStudentRules = [
     .isLength({ min: 2, max: 50 }).withMessage('El apellido debe tener entre 2 y 50 caracteres.')
     .trim(),
   body('telefono')
-    .optional()
+    .optional({ values: 'falsy' })
     .isMobilePhone('es-CL').withMessage('Debe proporcionar un teléfono válido.'),
   handleValidationErrors,
 ];
