@@ -66,7 +66,13 @@ def solicitudes_list(request):
                 return redirect('solicitudes_list')
 
     # Consulta ORM (Optimized for Rubric: Eficiencia en sentencias repetitivas)
-    solicitudes = Solicitud.objects.select_related('presidente').prefetch_related('voluntarios', 'adultos_mayores').order_by('-created_at')
+    solicitudes_list = Solicitud.objects.select_related('presidente').prefetch_related('voluntarios', 'adultos_mayores').order_by('-created_at')
+    
+    # RNF-REN-01: Paginación eficiente para no traer todos los registros de golpe
+    from django.core.paginator import Paginator
+    paginator = Paginator(solicitudes_list, 10) # 10 por página
+    page_number = request.GET.get('page')
+    solicitudes = paginator.get_page(page_number)
 
     # Consulta SQL Manual
     # Contamos cuantas solicitudes hay disponibles usando SQL directo
