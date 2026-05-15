@@ -1,3 +1,9 @@
+# ============================================================================
+# Nginx Reverse Proxy — RNF-SEG-01 (Cifrado en Tránsito)
+# Adaptado del nginx.conf.example de Django para Node.js
+# ============================================================================
+
+# Redirección HTTP → HTTPS
 server {
     listen 80;
     server_name midominio.cl www.midominio.cl;
@@ -22,28 +28,35 @@ server {
     # HSTS (Obliga al cliente a usar siempre HTTPS)
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
     
-    # Cabeceras de Seguridad recomendadas
-    add_header X-Frame-Options DENY; # Previene Clickjacking
+    # Cabeceras de Seguridad recomendadas (equivalente a Django SecurityMiddleware)
+    add_header X-Frame-Options DENY;            # Previene Clickjacking
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
 
-    # Configuración Gunicorn Reverse Proxy
+    # ==========================================
+    # Proxy a Node.js (reemplaza Gunicorn :8000)
+    # ==========================================
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://app:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_addrs;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         
-        # Le dice a Django que la petición original venía por HTTPS
+        # Le dice a Node.js que la petición original venía por HTTPS
         proxy_set_header X-Forwarded-Proto https;
+
+        # WebSocket support (para Vite HMR en desarrollo)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 
-    # Archivos estáticos de Django
-    location /static/ {
-        alias /var/www/allyuct/static/;
-    }
-
-    location /media/ {
-        alias /var/www/allyuct/media/;
+    # ==========================================
+    # Swagger docs (acceso directo)
+    # ==========================================
+    location /api/docs {
+        proxy_pass http://app:3000/api/docs;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
