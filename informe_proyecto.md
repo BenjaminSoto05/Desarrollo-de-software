@@ -7,10 +7,11 @@
 | Campo | Detalle |
 |---|---|
 | **Proyecto** | UCT-Vínculo Mayor (AllyUCT) |
-| **Asignatura** | Taller de Integración — Diseño de Software |
+| **Asignatura** | Diseño de Software |
+| **Docente** | Luciano Revillod |
 | **Docente** | Guido Octavio Mellado Bravo |
 | **Universidad** | Universidad Católica de Temuco |
-| **Fecha** | Mayo 2026 |
+| **Fecha** | 15 de Mayo de 2026 |
 
 ### Integrantes
 
