@@ -32,16 +32,16 @@ export default function Navbar() {
 
   return (
     <nav className={`${navBg} shadow-md transition-colors duration-500`} role="navigation" aria-label="Navegación principal">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Logo2 posicionado a la izquierda — igual que Django */}
-        <img src="/logo2.png" alt="Logo UCT" className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 h-11 w-auto" />
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo + Brand */}
-          <Link to="/" className={`flex items-center gap-2 ${navText} font-bold text-xl tracking-wide`} aria-label="Ir al inicio">
-            <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded" />
-            AllyUCT
-          </Link>
+          {/* Logo UCT + Brand */}
+          <div className="flex items-center gap-3">
+            <img src="/logo2.png" alt="Logo UCT" className="hidden lg:block h-9 w-auto" />
+            <Link to="/" className={`flex items-center gap-2 ${navText} font-bold text-xl tracking-wide`} aria-label="Ir al inicio">
+              <img src="/logo.jpg" alt="Logo" className="w-8 h-8 rounded" />
+              AllyUCT
+            </Link>
+          </div>
 
           {/* User Menu */}
           <div className="flex items-center gap-3">
