@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import connection
-from .models import Solicitud, Profile
+from .domain.models import Solicitud, Profile
 from .forms import UserRegisterForm, SolicitudForm
 
 def index(request):
@@ -108,7 +108,7 @@ def eliminar_cuenta(request):
     return render(request, 'confirmar_eliminar_cuenta.html')
 
 from .forms import SolicitudPaso2Form
-from .services import crear_solicitud_desde_wizard
+from .application.services import crear_solicitud_desde_wizard
 from django.contrib import messages
 
 @login_required

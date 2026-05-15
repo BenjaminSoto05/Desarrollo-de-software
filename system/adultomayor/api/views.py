@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from .serializers import SolicitudSerializer
 from ..infrastructure.repositories import SolicitudRepository
-from ..services import crear_solicitud_desde_wizard
+from ..application.services import crear_solicitud_desde_wizard
 
 class SolicitudViewSet(viewsets.ModelViewSet):
     """

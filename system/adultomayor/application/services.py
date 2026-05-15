@@ -1,4 +1,4 @@
-from .models import Solicitud
+from ..domain.models import Solicitud
 
 def crear_solicitud_desde_wizard(user, session_data):
     tipo_ayuda = session_data.get('solicitud_tipo', 'Ayuda General')
