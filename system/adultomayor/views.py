@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import connection
-from .models import Solicitud, Profile
+from .domain.models import Solicitud, Profile
 from .forms import UserRegisterForm, SolicitudForm
 
 def index(request):
@@ -66,7 +66,13 @@ def solicitudes_list(request):
                 return redirect('solicitudes_list')
 
     # Consulta ORM (Optimized for Rubric: Eficiencia en sentencias repetitivas)
-    solicitudes = Solicitud.objects.select_related('presidente').prefetch_related('voluntarios', 'adultos_mayores').order_by('-created_at')
+    solicitudes_list = Solicitud.objects.select_related('presidente').prefetch_related('voluntarios', 'adultos_mayores').order_by('-created_at')
+    
+    # RNF-REN-01: Paginación eficiente para no traer todos los registros de golpe
+    from django.core.paginator import Paginator
+    paginator = Paginator(solicitudes_list, 10) # 10 por página
+    page_number = request.GET.get('page')
+    solicitudes = paginator.get_page(page_number)
 
     # Consulta SQL Manual
     # Contamos cuantas solicitudes hay disponibles usando SQL directo
@@ -100,3 +106,68 @@ def eliminar_cuenta(request):
         user.delete()
         return redirect('index')
     return render(request, 'confirmar_eliminar_cuenta.html')
+
+from .forms import SolicitudPaso2Form
+from .application.services import crear_solicitud_desde_wizard
+from django.contrib import messages
+
+@login_required
+def solicitud_paso1(request):
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo_ayuda')
+        if tipo:
+            request.session['solicitud_tipo'] = tipo
+            return redirect('solicitud_paso2')
+    
+    opciones = [
+        {'id': 'compras', 'titulo': 'Hacer Compras', 'desc': 'Ir al supermercado, farmacia, etc.'},
+        {'id': 'tramites', 'titulo': 'Hacer Trámites', 'desc': 'Pagar cuentas, ir al banco.'},
+        {'id': 'compania', 'titulo': 'Compañía', 'desc': 'Conversar, pasear, acompañamiento.'},
+        {'id': 'tecnologia', 'titulo': 'Ayuda Tecnológica', 'desc': 'Usar celular, internet, computador.'},
+        {'id': 'otro', 'titulo': 'Otro tipo de ayuda', 'desc': 'Cualquier otra cosa que necesites.'},
+    ]
+    return render(request, 'adultomayor/solicitudes/paso1.html', {'opciones': opciones})
+
+@login_required
+def solicitud_paso2(request):
+    tipo_ayuda = request.session.get('solicitud_tipo', None)
+    if not tipo_ayuda:
+        return redirect('solicitud_paso1')
+
+    if request.method == 'POST':
+        form = SolicitudPaso2Form(request.POST)
+        if form.is_valid():
+            request.session['solicitud_desc'] = form.cleaned_data['descripcion']
+            return redirect('solicitud_paso3')
+    else:
+        desc_previa = request.session.get('solicitud_desc', '')
+        form = SolicitudPaso2Form(initial={'descripcion': desc_previa})
+
+    return render(request, 'adultomayor/solicitudes/paso2.html', {
+        'form': form,
+        'tipo_ayuda': tipo_ayuda
+    })
+
+@login_required
+def solicitud_paso3(request):
+    tipo_ayuda = request.session.get('solicitud_tipo', None)
+    descripcion = request.session.get('solicitud_desc', None)
+
+    if not tipo_ayuda or not descripcion:
+        return redirect('solicitud_paso1')
+
+    if request.method == 'POST':
+        try:
+            solicitud = crear_solicitud_desde_wizard(request.user, request.session)
+            del request.session['solicitud_tipo']
+            del request.session['solicitud_desc']
+            messages.success(request, '¡Tu solicitud ha sido enviada con éxito! Pronto alguien se pondrá en contacto.')
+            return redirect('solicitudes_list')
+        except Exception as e:
+            messages.error(request, 'Hubo un error al procesar tu solicitud. Inténtalo de nuevo.')
+            return redirect('solicitud_paso1')
+
+    return render(request, 'adultomayor/solicitudes/paso3.html', {
+        'tipo_ayuda': tipo_ayuda,
+        'descripcion': descripcion
+    })
