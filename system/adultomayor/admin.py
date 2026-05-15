@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Solicitud
+from .domain.models import Profile, Solicitud
 
 # Register your models here.
 

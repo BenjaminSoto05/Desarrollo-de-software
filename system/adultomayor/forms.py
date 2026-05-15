@@ -1,11 +1,17 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile, Solicitud
+from .domain.models import Profile, Solicitud
 
 class UserRegisterForm(UserCreationForm):
     rut = forms.CharField(max_length=12, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'RUT'}))
     rol = forms.ChoiceField(choices=Profile.ROLES, widget=forms.Select(attrs={'class': 'form-select'}))
+    consentimiento_privacidad = forms.BooleanField(
+        required=True,
+        label="Acepto el tratamiento de mis datos personales según la Ley 19.628.",
+        help_text="Tus datos sensibles (RUT, Dirección) solo serán accesibles bajo estricta necesidad por voluntarios asignados.",
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
 
     class Meta:
         model = User
@@ -58,3 +64,15 @@ class SolicitudForm(forms.ModelForm):
             'cantidad_voluntarios': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
             'cantidad_beneficiarios': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
+
+class SolicitudPaso2Form(forms.Form):
+    descripcion = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'w-full p-4 text-xl border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-amber-400 focus:border-blue-600',
+            'rows': 5,
+            'placeholder': 'Ejemplo: Necesito ayuda para ir al supermercado el martes en la mañana...',
+            'aria-label': 'Descripción detallada de la ayuda que necesita'
+        }),
+        label="Cuéntanos más sobre lo que necesitas",
+        required=True
+    )
