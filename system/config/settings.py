@@ -19,7 +19,7 @@ DEBUG = os.getenv('DJANGO_ENV', 'development') != 'production'
 
 ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS', '').split(',')
 
-AUTH_USER_MODEL = 'core.User'
+# AUTH_USER_MODEL = 'core.User'
 
 # ==========================================
 # RNF-SEG-01: CIFRADO EN TRÁNSITO Y COOKIES
@@ -94,6 +94,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Dato: En trabajo serio no se comparte el .env, contiene las contras de la DB xD
 
 DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} if not os.getenv('DB_NAME') else {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME'),
