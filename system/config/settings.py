@@ -19,6 +19,8 @@ DEBUG = os.getenv('DJANGO_ENV', 'development') != 'production'
 
 ALLOWED_HOSTS = ['*'] if DEBUG else os.getenv('ALLOWED_HOSTS', '').split(',')
 
+AUTH_USER_MODEL = 'core.User'
+
 # ==========================================
 # RNF-SEG-01: CIFRADO EN TRÁNSITO Y COOKIES
 # ==========================================
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_spectacular',
+    'core',
     'adultomayor',
 ]
 

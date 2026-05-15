@@ -1,17 +1,20 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your models here.
 
 class Profile(models.Model):
     ROLES = (
-        ('PRESIDENTE', 'Presidente de Junta'),
-        ('VOLUNTARIO', 'Voluntario'),
         ('ADULTO_MAYOR', 'Adulto Mayor'),
+        ('ESTUDIANTE_UCT', 'Estudiante UCT'),
+        ('ADMINISTRADOR', 'Administrador'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rut = models.CharField(max_length=12, unique=True)
     rol = models.CharField(max_length=20, choices=ROLES)
+    direccion = models.TextField(blank=True, null=True)  # Campo sensible, solo accesible con permisos
 
     def __str__(self):
         return f"{self.user.username} - {self.rol}"
@@ -31,6 +34,7 @@ class Solicitud(models.Model):
     cantidad_presidentes = models.IntegerField(default=1)
     cantidad_voluntarios = models.IntegerField(default=1)
     cantidad_beneficiarios = models.IntegerField(default=1)
+    direccion = models.TextField(blank=True, null=True)  # Campo sensible, protegido por permisos
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
