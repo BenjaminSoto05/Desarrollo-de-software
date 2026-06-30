@@ -1,24 +1,125 @@
-En este espacio nos centramos en el trabajo de taller integracion y la codificacion de nuestro proyecto que estamos llevando a cabo. Ademas nos centraremos en dejar la documentacion correspondientes y la actividad de cada integrante.
+# UCT-Vínculo Mayor — AllyUCT
 
-DB = POSTGRESQL
+Plataforma de voluntariado que conecta estudiantes de la UCT con adultos mayores de Temuco.
 
-Despues se debe operar con el pgadmin4 para tener acceso a las tablas 
+## Stack Tecnológico
 
-**Consejo:** Genere el entorno virtual **dentro del directorio en el que se encuentre system** en su manejo de archivos, es decir, **no genere el entorno virtual dentro de system**, para un mayor orden.
+| Componente | Tecnología |
+|---|---|
+| **Backend** | Node.js + Express + Prisma ORM |
+| **Frontend** | React + Vite + Tailwind CSS |
+| **Base de datos** | PostgreSQL 15 |
+| **Cache** | Redis 7 |
+| **Documentación API** | Swagger/OpenAPI 3.0 |
+| **Autenticación** | JWT + bcrypt |
+| **Despliegue** | Docker + Nginx |
 
-**Recuerde crear y utilizar el entorno virtual cada vez que avance en el proyecto, de no hacerlo, puede generar errores en el repositorio por falta de librerias, entre otros!**
-Seguido de esto, ademas cada vez que agregue librerias, agreguelo al archivo ya hecho "requeriments.txt" mediante el comando: "pip freeze > requeriments.txt"
-Nota: *Debe de encontrarse en la carpeta actual de requeriments.txt, de caso contrario, creara un nuevo archivo.*
+## Estructura del Proyecto
 
+```
+├── server/          → Backend Node.js (API REST)
+│   ├── src/
+│   │   ├── domain/          → Entidades y reglas de negocio
+│   │   ├── application/     → Casos de uso
+│   │   ├── presentation/    → Controladores y rutas
+│   │   └── infrastructure/  → Prisma, Logger, Swagger, Cron
+│   └── prisma/              → Schema y migraciones
+├── client/          → Frontend React (Vite)
+│   └── src/
+│       ├── components/      → Componentes reutilizables
+│       ├── pages/           → Páginas de la aplicación
+│       ├── context/         → AuthContext (estado global)
+│       └── services/        → API client (Axios)
+├── system/          → Configuración Django (legacy + RNF)
+├── Dockerfile       → Build multi-stage (React + Node)
+├── docker-compose.yml → Orquestación de servicios
+└── srs_vinculo_uct.md → Documento SRS
+```
 
-## Guia del repositorio
-1. Clonar el repositorio.
-2. Crear entorno virtual: `python -m venv nombre-entorno`
-3. Activar entorno mediante: `source directorio\activate`.
-4. Instalar dependencias: `pip install -r requirements.txt`
-5. Crear archivo `.env` dentro del directorio /system con tus credenciales para la base de datos. La estructura es por ejemplo: DB_NAME=miproyectodb (salto de linea) DB_USER=tuusuario (salto de linea) DB_PASSWORD=tucontra
-6. Para correr migraciones: `python manage.py migrate`
-7. Para correr el servidor: `python manage.py runserver`
-8. **(Opcional) Cargar datos de prueba:** Para poblar la base de datos con usuarios y solicitudes de ejemplo, ejecute: `python manage.py populate_data`
-   - Usuarios creados: `presi`, `vol1`, `vol2`, `abuelo1`.
-   - Contraseña para todos: `pass1234`.
+## Inicio Rápido (Desarrollo Local)
+
+### Requisitos
+- Node.js 22+
+- PostgreSQL 15+ (corriendo)
+- Redis (opcional, para cache)
+
+### Pasos
+
+**1. Clonar y configurar:**
+```bash
+git clone <url-del-repo>
+cd Desarrollo-de-software
+```
+
+**2. Configurar variables de entorno:**
+```bash
+cp server/.env.example server/.env
+# Editar server/.env con tus credenciales de PostgreSQL
+```
+
+**3. Instalar dependencias e inicializar base de datos:**
+```bash
+cd server
+npm install
+npx prisma migrate dev
+npx prisma db seed
+cd ..
+```
+
+**4. Instalar frontend:**
+```bash
+cd client
+npm install
+cd ..
+```
+
+**5. Iniciar servidores (2 terminales):**
+
+Terminal 1 — Backend:
+```bash
+cd server
+node src/server.js
+```
+
+Terminal 2 — Frontend:
+```bash
+cd client
+npm run dev
+```
+
+**6. Abrir en el navegador:**
+- Frontend: http://localhost:5173
+- API Docs (Swagger): http://localhost:3000/api/docs
+- Health Check: http://localhost:3000/api/health
+
+### Cuentas de Prueba
+| Rol | Email | Contraseña |
+|---|---|---|
+| Estudiante | `juan.perez@alu.uct.cl` | `MiPass123` |
+| Adulto Mayor | `marialagos@gmail.com` | `MiPass123` |
+
+## Despliegue con Docker
+
+```bash
+docker compose up --build -d
+```
+
+Esto levanta automáticamente:
+- PostgreSQL 15
+- Redis 7
+- Node.js (API + Frontend compilado)
+
+## Documentación API
+
+Accede a la documentación interactiva Swagger en:
+- **Swagger UI:** http://localhost:3000/api/docs
+- **Schema JSON:** http://localhost:3000/api/schema
+
+## Equipo
+- Benjamin Sebastian — Requerimientos Funcionales (RF)
+- Francisco Valderrama — Requerimientos No Funcionales: Seguridad (RNF-SEG)
+- Sebastian Rivera — Requerimientos No Funcionales: Despliegue (RNF-DIS/REN)
+- Axel Gonzalez — Requerimientos No Funcionales: API/Arquitectura (RNF-MAN)
+
+## Docente
+Guido Octavio Mellado Bravo — Universidad Católica de Temuco
