@@ -35,4 +35,25 @@ function roleMiddleware(...allowedRoles) {
   };
 }
 
-module.exports = roleMiddleware;
+// ============================================================================
+// Permisos específicos predefinidos
+// ============================================================================
+
+const canPublishSolicitud = roleMiddleware('ADULTO_MAYOR', 'TUTOR');
+const canAcceptTask = roleMiddleware('ESTUDIANTE');
+const canModerateContent = roleMiddleware('ADMIN');
+const canGenerateCertificate = roleMiddleware('ESTUDIANTE', 'ADMIN');
+const isAdultoMayor = roleMiddleware('ADULTO_MAYOR');
+const isEstudianteUCT = roleMiddleware('ESTUDIANTE');
+const isAdministrador = roleMiddleware('ADMIN');
+
+module.exports = {
+  roleMiddleware,
+  canPublishSolicitud,
+  canAcceptTask,
+  canModerateContent,
+  canGenerateCertificate,
+  isAdultoMayor,
+  isEstudianteUCT,
+  isAdministrador,
+};

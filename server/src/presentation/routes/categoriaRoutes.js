@@ -24,10 +24,12 @@ const categoriaController = new CategoriaController({
 // Rutas
 const router = Router();
 
+const cacheMiddleware = require('../middlewares/cacheMiddleware');
+
 /**
  * GET /api/categorias
  * Listado público de categorías activas (no requiere auth)
  */
-router.get('/', categoriaController.handleGetAll);
+router.get('/', cacheMiddleware('categorias_list'), categoriaController.handleGetAll);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const { body } = require('express-validator');
 
 // Middlewares
 const authMiddleware = require('../middlewares/authMiddleware');
-const roleMiddleware = require('../middlewares/roleMiddleware');
+const { roleMiddleware } = require('../middlewares/roleMiddleware');
 const { handleValidationErrors } = require('../middlewares/validationMiddleware');
 
 // Infraestructura

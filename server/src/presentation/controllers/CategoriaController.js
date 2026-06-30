@@ -19,11 +19,18 @@ class CategoriaController {
   async handleGetAll(req, res, next) {
     try {
       const categorias = await this.getCategorias.execute();
-
-      res.json({
+      
+      const response = {
         success: true,
         data: categorias,
-      });
+      };
+
+      if (req.cacheKey) {
+        const redisClient = require('../../infrastructure/redisClient');
+        await redisClient.set(req.cacheKey, JSON.stringify(response), 'EX', 3600);
+      }
+
+      res.json(response);
     } catch (error) {
       next(error);
     }
